@@ -1,0 +1,13 @@
+<group>
+	<wanderforce>0.885</wanderforce>
+	<maxvol>0.008245</maxvol>
+<group/>
+<fadespeed>0</fadespeed>
+<rotation>0.0075</rotation>
+<seekforce>0</seekforce>
+<wanderD>278.625</wanderD>
+	<wanderR>57</wanderR>
+	<change>0.84</change>
+<maxspeed>0.8</maxspeed>
+<Point_Size>5</Point_Size>
+</group>
