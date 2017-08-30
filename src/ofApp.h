@@ -4,6 +4,8 @@
 #include "Agent.hpp"
 #include "ofxGui.h"
 #include "ofxOsc.h"
+#include "ofxVideoRecorder.h"
+
 
 struct rect{
     ofRectangle rectangle;
@@ -19,6 +21,7 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
+    void exit();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -31,6 +34,8 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+    void audioIn(float * input, int bufferSize, int nChannels);
+
     
     
     void addAgents(int num);
@@ -123,5 +128,16 @@ class ofApp : public ofBaseApp{
     
     ofxOscMessage m;
     //this is the osc message your application gets from your device.
+    
+    
+    ofxVideoRecorder    vidRecorder;
+    ofSoundStream       soundStream;
+    bool bRecording;
+    int sampleRate;
+    int channels;
+    string fileName;
+    string fileExt;
+    
+    void recordingComplete(ofxVideoRecorderOutputFileCompleteEventArgs& args);
     
 };

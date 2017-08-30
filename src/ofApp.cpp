@@ -170,6 +170,39 @@ void ofApp::setup(){
     sendBack.setAddress("/1/rotary6");
     sender.sendMessage(sendBack);
     
+    
+    sampleRate = 44100;
+    channels = 2;
+    
+    fileName = "testMovie";
+    fileExt = ".mov"; // ffmpeg uses the extension to determine the container type. run 'ffmpeg -formats' to see supported formats
+    
+    // override the default codecs if you like
+    // run 'ffmpeg -codecs' to find out what your implementation supports (or -formats on some older versions)
+
+
+    // run 'ffmpeg -codecs' to find out what your implementation supports (or -formats on some older versions)
+    vidRecorder.setOutputPixelFormat("yuvj440p");
+    
+    //vidRecorder.setVideoCodec("prores");
+    vidRecorder.setVideoCodec("prores");
+    
+    vidRecorder.setVideoBitrate("880k");
+    
+    
+    
+    
+    ofAddListener(vidRecorder.outputFileCompleteEvent, this, &ofApp::recordingComplete);
+    
+    //    soundStream.listDevices();
+    //    soundStream.setDeviceID(11);
+    soundStream.setup(this, 0, channels, sampleRate, 256, 4);
+    
+    ofSetWindowShape(ofGetWidth(), ofGetHeight()	);
+    bRecording = false;
+    ofEnableAlphaBlending();
+
+    
 }
 
 //--------------------------------------------------------------
@@ -408,8 +441,26 @@ void ofApp::update(){
     shrink();
     
     
-    ofPixels pixels;
-    fbo.readToPixels(pixels);
+  
+
+    
+    if( bRecording){
+        ofPixels pixels;
+        fbo.readToPixels(pixels);
+        bool success = vidRecorder.addFrame(pixels);
+        if (!success) {
+            ofLogWarning("This frame was not added!");
+        }
+    }
+    
+    // Check if the video recorder encountered any error while writing video frame or audio smaples.
+    if (vidRecorder.hasVideoError()) {
+        ofLogWarning("The video recorder failed to write some frames!");
+    }
+    
+    if (vidRecorder.hasAudioError()) {
+        ofLogWarning("The video recorder failed to write some audio samples!");
+    }
 
     
     
@@ -581,10 +632,32 @@ void ofApp::keyReleased(int key){
     }
     
     
-    if(key == 'r'){
-        removeAgents(100);
+  
     
+    
+    if(key=='r'){
+        bRecording = !bRecording;
+        if(bRecording && !vidRecorder.isInitialized()) {
+           // vidRecorder.setup(fileName+ofGetTimestampString()+fileExt, vidGrabber.getWidth(), vidGrabber.getHeight(), 30, sampleRate, channels);
+                      vidRecorder.setup(fileName+ofGetTimestampString()+fileExt, fbo.getWidth(), fbo.getHeight(), 30); // no audio
+            //            vidRecorder.setup(fileName+ofGetTimestampString()+fileExt, 0,0,0, sampleRate, channels); // no video
+            //          vidRecorder.setupCustomOutput(vidGrabber.getWidth(), vidGrabber.getHeight(), 30, sampleRate, channels, "-vcodec mpeg4 -b 1600k -acodec mp2 -ab 128k -f mpegts udp://localhost:1234"); // for custom ffmpeg output string (streaming, etc)
+            
+            // Start recording
+            vidRecorder.start();
+        }
+        else if(!bRecording && vidRecorder.isInitialized()) {
+            vidRecorder.setPaused(true);
+        }
+        else if(bRecording && vidRecorder.isInitialized()) {
+            vidRecorder.setPaused(false);
+        }
     }
+    if(key=='c'){
+        bRecording = false;
+        vidRecorder.close();
+    }
+
     
 }
 
@@ -729,4 +802,21 @@ void ofApp::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
     
+}
+
+//--------------------------------------------------------------
+void ofApp::audioIn(float *input, int bufferSize, int nChannels){
+    if(bRecording)
+        vidRecorder.addAudioSamples(input, bufferSize, nChannels);
+}
+
+//--------------------------------------------------------------
+void ofApp::recordingComplete(ofxVideoRecorderOutputFileCompleteEventArgs& args){
+    cout << "The recoded video file is now complete." << endl;
+}
+
+//--------------------------------------------------------------
+void ofApp::exit(){
+    ofRemoveListener(vidRecorder.outputFileCompleteEvent, this, &ofApp::recordingComplete);
+    vidRecorder.close();
 }
