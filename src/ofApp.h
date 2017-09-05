@@ -140,4 +140,6 @@ class ofApp : public ofBaseApp{
     
     void recordingComplete(ofxVideoRecorderOutputFileCompleteEventArgs& args);
     
+    bool stop=true;
+    
 };

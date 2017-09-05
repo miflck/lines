@@ -54,7 +54,9 @@ void ofApp::setup(){
     
     
     
-    fbo.allocate(ofGetWidth()*2, ofGetHeight()*2, GL_RGB);
+//    fbo.allocate(ofGetWidth()*2, ofGetHeight()*2, GL_RGB);
+    fbo.allocate(1920*3,1080, GL_RGB);
+
     
     fbo.begin();
     ofClear(0,0,0,0);
@@ -207,7 +209,7 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
+    if(!stop){
     points.clear();
     sizes.clear();
     
@@ -224,13 +226,13 @@ void ofApp::update(){
     
     //vbo.setColorData(&sizes[0], 10000, GL_STATIC_DRAW);
     
-    fbo.begin();
-    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
+    //fbo.begin();
+   // ofEnableBlendMode(OF_BLENDMODE_ALPHA);
     
-    ofEnableAlphaBlending();
-    ofSetColor(0,0,0,fadespeed);
-    ofDrawRectangle(0, 0, fbo.getWidth(), fbo.getHeight());
-    fbo.end();
+    //ofEnableAlphaBlending();
+    //ofSetColor(0,0,0,fadespeed);
+    //ofDrawRectangle(0, 0, fbo.getWidth(), fbo.getHeight());
+    //fbo.end();
     
     
     
@@ -259,7 +261,7 @@ void ofApp::update(){
         
         
     }
-    
+    }
     
     /*
     // cout<<renderdAgents<<endl;
@@ -468,7 +470,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
+    if(!stop){
     ofSetColor(255);
     fbo.begin();
     
@@ -476,11 +478,11 @@ void ofApp::draw(){
     
     
     ofColor c;
-    c.setHsb(0, 0, 200);
-    ofSetColor(c,200);
+    c.setHsb(0, 200, 200);
+    ofSetColor(c);
     
     ofEnablePointSprites();
-    camera.begin();
+    //camera.begin();
    // drawRects();
     shader.begin();
    // ofEnableBlendMode(OF_BLENDMODE_ADD);
@@ -491,7 +493,7 @@ void ofApp::draw(){
     texture.unbind();
     shader.end();
 
-    camera.end();
+   // camera.end();
     
     
     ofDisablePointSprites();
@@ -501,7 +503,7 @@ void ofApp::draw(){
     fbo.end();
     
    // drawRects();
-
+    }
     
     camera.begin();
     
@@ -639,7 +641,7 @@ void ofApp::keyReleased(int key){
         bRecording = !bRecording;
         if(bRecording && !vidRecorder.isInitialized()) {
            // vidRecorder.setup(fileName+ofGetTimestampString()+fileExt, vidGrabber.getWidth(), vidGrabber.getHeight(), 30, sampleRate, channels);
-                      vidRecorder.setup(fileName+ofGetTimestampString()+fileExt, fbo.getWidth(), fbo.getHeight(), 30); // no audio
+                      vidRecorder.setup("Recordings/"+fileName+ofGetTimestampString()+fileExt, fbo.getWidth(), fbo.getHeight(), 30); // no audio
             //            vidRecorder.setup(fileName+ofGetTimestampString()+fileExt, 0,0,0, sampleRate, channels); // no video
             //          vidRecorder.setupCustomOutput(vidGrabber.getWidth(), vidGrabber.getHeight(), 30, sampleRate, channels, "-vcodec mpeg4 -b 1600k -acodec mp2 -ab 128k -f mpegts udp://localhost:1234"); // for custom ffmpeg output string (streaming, etc)
             
@@ -658,6 +660,10 @@ void ofApp::keyReleased(int key){
         vidRecorder.close();
     }
 
+    
+    if(key=='s'){
+        stop=!stop;
+    }
     
 }
 

@@ -16,13 +16,15 @@ Agent::~Agent(){
 
 //--------------------------------------------------------------
 void Agent::setup(){
-    position.set(ofGetWidth()/2,ofGetHeight()/2,0);
+    
+    
+    position.set(1920*3/2,1080/2,0);
     
     
     float theta1 = ofRandom(0, TWO_PI);
     float theta2 = ofRandom(0, TWO_PI);
     
-    float radius = ofRandom(0,10);
+    float radius = ofRandom(500,500);
     
     
 
@@ -37,12 +39,12 @@ void Agent::setup(){
     
     
     
-    homeposition.set(p);
+    homeposition.set(position);
 
-    position.set(p);
+  //  position.set(p);
   //  target.set(ofRandom(-ofGetWidth(),ofGetWidth()),ofRandom(-ofGetHeight(),ofGetHeight()),0);
  //   startMoving();
-    target.set(ofGetWidth(),ofGetHeight(),0);
+    target.set(position);
 
     
     ofVec3f o;
