@@ -1,6 +1,6 @@
 .DS_Store
 /bin/data/movies
-/bin/data/Recodings
+/bin/data/Recordings
 /bin/facemigrationDebug.app
 *.xcuserstate
 
